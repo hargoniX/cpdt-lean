@@ -100,8 +100,6 @@ instance : LawfulMonad Computation where
   pure_bind      := by
     intro α m1 m2 f
     simp [Bind.bind, bind, bind_fun, pure, ret]
-    apply ext
-    simp
   bind_assoc     := by
     intro α β γ x f g
     simp [Bind.bind, bind, bind_fun]

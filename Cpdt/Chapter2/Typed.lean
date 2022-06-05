@@ -114,14 +114,13 @@ namespace TExp
 open TInstr TProg TStack
 
 def compile : (e : TExp t) → (ts : TStack) → TProg ts (t :: ts)
-  | nConst n, ts => cons (inConst n) nil
-  | bConst b, ts => cons (ibConst b) nil
-  | @binop _ _ r op arg1 arg2, ts =>
-      let arg2Out := compile arg2 ts
-      let arg1Out := compile arg1 (r :: ts)
+  | nConst n, _ => cons (inConst n) nil
+  | bConst b, _ => cons (ibConst b) nil
+  | binop op arg1 arg2, _ =>
+      let arg2Out := compile arg2 _
+      let arg1Out := compile arg1 _
       let opOut := cons (iBinop op) nil
       concat arg2Out (concat arg1Out opOut)
-      
 
 @[simp] theorem compile_nConst : compile (nConst n) ts = cons (inConst n) nil := by rfl
 @[simp] theorem compile_bConst : compile (bConst b) ts = cons (ibConst b) nil := by rfl
@@ -135,7 +134,7 @@ theorem concat_correct : ∀ (p1 : TProg ts1 ts2) (p2 : TProg ts2 ts3) (s : VSta
 
 theorem compile_correct_helper : ∀ (e : TExp t) (ts : TStack) (s : VStack ts), TProg.denote (compile e ts) s = (TExp.denote e, s) := by
   intro e 
-  induction e <;> simp_all[concat_correct]
+  induction e <;> simp_all[compile, concat_correct]
 
 theorem compile_correct : ∀ (e : TExp t), TProg.denote (compile e []) () = (TExp.denote e, ()) := by
   simp [compile_correct_helper]
